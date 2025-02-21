@@ -1,40 +1,82 @@
-name: Playwright Tests
+name: Run Playwright Tests
+
 on:
   workflow_dispatch:
     inputs:
-      grep_tag:
-        description: 'Grep tag for tests'
+      tags:
+        description: 'Test tags (comma-separated)'
         required: true
-        default: 'squad1'
+        default: 'tag1,tag2'
       project:
         description: 'Project to run tests'
         required: true
         default: 'squad1'
+
 jobs:
   test:
-    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    # - name: Install Playwright Browsers
-    #   run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: |
-          TAGS="${{ inputs.grep_tag }}"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Playwright tests
+        run: |
+          TAGS="${{ inputs.tags }}"
           PROJECT="${{ inputs.project }}"
           FORMATTED_TAGS=$(echo "$TAGS" | sed 's/,/|/g')  # Convert comma-separated values to regex format
           echo "Running tests with tags: $FORMATTED_TAGS on project: $PROJECT"
+          echo
           npx playwright test --grep "($FORMATTED_TAGS)" --project=$PROJECT
 
-      # run: npx playwright test --grep "(stg|vet)" --project="${{ github.event.inputs.project }}"
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
+
+
+
+
+
+# name: Playwright Tests
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       grep_tag:
+#         description: 'Grep tag for tests'
+#         required: true
+#         default: 'squad1'
+#       project:
+#         description: 'Project to run tests'
+#         required: true
+#         default: 'squad1'
+# jobs:
+#   test:
+#     timeout-minutes: 60
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v4
+#     - uses: actions/setup-node@v4
+#       with:
+#         node-version: lts/*
+#     - name: Install dependencies
+#       run: npm ci
+#     # - name: Install Playwright Browsers
+#     #   run: npx playwright install --with-deps
+#     - name: Run Playwright tests
+#       run: |
+#           TAGS="${{ inputs.grep_tag }}"
+#           PROJECT="${{ inputs.project }}"
+#           FORMATTED_TAGS=$(echo "$TAGS" | sed 's/,/|/g')  # Convert comma-separated values to regex format
+#           echo "Running tests with tags: $FORMATTED_TAGS on project: $PROJECT"
+#           npx playwright test --grep "($FORMATTED_TAGS)" --project=$PROJECT
+
+#       # run: npx playwright test --grep "(stg|vet)" --project="${{ github.event.inputs.project }}"
+#     - uses: actions/upload-artifact@v4
+#       if: always()
+#       with:
+#         name: playwright-report
+#         path: playwright-report/
+#         retention-days: 30
