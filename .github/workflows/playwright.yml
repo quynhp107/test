@@ -24,7 +24,14 @@ jobs:
     # - name: Install Playwright Browsers
     #   run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: npx playwright test --grep "(stg|vet)" --project="${{ github.event.inputs.project }}"
+      run: |
+          TAGS="${{ inputs.grep_tag }}"
+          PROJECT="${{ inputs.project }}"
+          FORMATTED_TAGS=$(echo "$TAGS" | sed 's/,/|/g')  # Convert comma-separated values to regex format
+          echo "Running tests with tags: $FORMATTED_TAGS on project: $PROJECT"
+          npx playwright test --grep "($FORMATTED_TAGS)" --project=$PROJECT
+
+      # run: npx playwright test --grep "(stg|vet)" --project="${{ github.event.inputs.project }}"
     - uses: actions/upload-artifact@v4
       if: always()
       with:
