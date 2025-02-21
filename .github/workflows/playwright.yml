@@ -33,6 +33,7 @@ jobs:
           PROJECT="${{ inputs.project }}"
           FORMATTED_TAGS=$(echo "$TAGS" | sed 's/,/|/g')  # Convert comma-separated values to regex format
           echo "Running tests with tags: $FORMATTED_TAGS on project: $PROJECT"
+          echo "Executing command: npx playwright test --grep \"($FORMATTED_TAGS)\" --project=$PROJECT"
           npx playwright test --grep "($FORMATTED_TAGS)" --project=$PROJECT
     - uses: actions/upload-artifact@v4
       if: always()
