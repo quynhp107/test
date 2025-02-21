@@ -39,7 +39,7 @@ test('get started link @vet', async ({ page }) => {
 });
 
 
-test('get started link', async ({ page }) => {
+test('get started link @bbb', async ({ page }) => {
   await page.goto('https://playwright.dev/');
 
   // Click the get started link.
