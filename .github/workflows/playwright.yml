@@ -25,16 +25,16 @@ jobs:
         node-version: lts/*
     - name: Install dependencies
       run: npm ci
-    # - name: Install Playwright Browsers
-    #   run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: |
+          ENV="${{ inputs.ENV }}"
           TAGS="${{ inputs.tags }}"
           PROJECT="${{ inputs.project }}"
           FORMATTED_TAGS=$(echo "$TAGS" | sed 's/,/|/g')  # Convert comma-separated values to regex format
+          npx playwright test --grep "$FORMATTED_TAGS" --project=$PROJECT
+          echo "Using environment: $ENV"
           echo "Running tests with tags: $FORMATTED_TAGS on project: $PROJECT"
           echo "Executing command: npx playwright test --grep \"($FORMATTED_TAGS)\" --project=$PROJECT"
-          npx playwright test --grep "$FORMATTED_TAGS" --project=$PROJECT
     - uses: actions/upload-artifact@v4
       if: always()
       with:
