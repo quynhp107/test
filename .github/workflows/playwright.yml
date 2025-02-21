@@ -2,18 +2,14 @@ name: Playwright Tests
 on:
   workflow_dispatch:
     inputs:
-      tags:
-        description: 'Test tags (comma-separated)'
-        required: true
-        default: 'squad1,vet'
-      project:
-        description: 'Project to run tests'
+      grep_tag:
+        description: 'Grep tag for tests'
         required: true
         default: 'squad1'
-      ENV:
-        description: 'Test environment'
-        required: true
-        default: 'STAGING'
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 jobs:
   test:
     timeout-minutes: 60
@@ -28,13 +24,8 @@ jobs:
     # - name: Install Playwright Browsers
     #   run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: |
-          TAGS="${{ inputs.tags }}"
-          PROJECT="${{ inputs.project }}"
-          FORMATTED_TAGS=$(echo "$TAGS" | sed 's/,/|/g')  # Convert comma-separated values to regex format
-          echo "Running tests with tags: $FORMATTED_TAGS on project: $PROJECT"
-          echo "Executing command: npx playwright test --grep \"($FORMATTED_TAGS)\" --project=$PROJECT"
-          npx playwright test --grep "squad1"
+      run: npx playwright test
+      run: npx playwright test --grep "${{ github.event.inputs.grep_tag }}"
     - uses: actions/upload-artifact@v4
       if: always()
       with:
