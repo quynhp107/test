@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test('has title1 @squad1', async ({ page }) => {
+test('has title1',{ tag: ['@squad1'] }, async ({ page }) => {
   await page.goto('https://playwright.dev/');
 
   // Expect a title "to contain" a substring.
   await expect(page).toHaveTitle(/Playwright/);
 });
 
-test('get started link2 @squad1', async ({ page }) => {
+test('get started link2',{ tag: ['@vet'] }, async ({ page }) => {
   await page.goto('https://playwright.dev/');
 
   // Click the get started link.
